@@ -2,8 +2,12 @@
 
 namespace BriscolaCLI;
 
+use function array_map;
 use function array_rand;
 use function array_reduce;
+use function array_values;
+use function end;
+use function sort;
 
 class Game
 {
@@ -35,6 +39,20 @@ class Game
         $this->pickRandomFirstPlayer();
         $this->deal();
         $this->drawTrumpCard();
+    }
+
+    public function getWinner()
+    {
+        $scores = $this->getPlayerScores();
+
+        return reset($scores)['player'];
+    }
+
+    public function getLoser()
+    {
+        $scores = $this->getPlayerScores();
+
+        return end($scores)['player'];
     }
 
     private function pickRandomFirstPlayer()
@@ -75,5 +93,20 @@ class Game
         return $this->nextPlayerToAct;
     }
 
+    /**
+     * @return array
+     */
+    private function getPlayerScores(): array
+    {
+        $scores = array_map(function ($player) {
+            /** @var Player $player */
+            return ['player' => $player, 'score' => $player->getScore()];
+        }, $this->players);
 
+        uasort($scores, function ($a, $b) {
+            return $b['score'] > $a['score'];
+        });
+
+        return $scores;
+    }
 }

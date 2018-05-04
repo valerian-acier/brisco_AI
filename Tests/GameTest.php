@@ -57,4 +57,18 @@ class GameTest extends TestCase
         $game->deal();
         $this->assertEquals(0, count($player1->getCardsInHand()));
     }
+
+    /** @test */
+    public function the_winner_is_the_one_player_with_the_most_points_and_the_loser_is_the_other_one()
+    {
+        $player1 = new Player('Johnny');
+        $player2 = new Player('Mary');
+        $deck = new Deck(new ArrayRandomizer());
+        $game = new Game([$player1, $player2], $deck);
+
+        $player1->addCardsWon([new Card(Card::getSuits()[0], 'A'), new Card(Card::getSuits()[0], '2')]);
+
+        $this->assertEquals($player1, $game->getWinner());
+        $this->assertEquals($player2, $game->getLoser());
+    }
 }

@@ -19,3 +19,6 @@ while ($game->isRunning()) {
 
 $winner = $game->getWinner();
 $loser = $game->getLoser();
+
+var_dump($winner);
+var_dump($loser);
