@@ -2,6 +2,7 @@
 
 use BriscolaCLI\ArrayRandomizer;
 use BriscolaCLI\Card;
+use BriscolaCLI\CommandLine;
 use BriscolaCLI\Deck;
 use BriscolaCLI\Game;
 use BriscolaCLI\Player;
@@ -70,5 +71,26 @@ class GameTest extends TestCase
 
         $this->assertEquals($player1, $game->getWinner());
         $this->assertEquals($player2, $game->getLoser());
+    }
+
+    /** @test */
+    public function play_one_turn()
+    {
+        $player1 = new Player('Johnny');
+        $player2 = new Player('Mary');
+        $deck = new Deck(new ArrayRandomizer());
+        $game = new Game([$player1, $player2], $deck);
+        $game->start();
+        $commandLine = Mockery::mock(CommandLine::class);
+        $commandLine->shouldReceive('getLine')
+            ->once()
+            ->andReturn('1');
+        $commandLine->shouldReceive('getLine')
+            ->once()
+            ->andReturn('1');
+
+        $game->play($commandLine);
+
+        $this->assertInstanceOf(Player::class, $game->getNextPlayerToAct());
     }
 }

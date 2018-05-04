@@ -2,6 +2,10 @@
 
 namespace BriscolaCLI;
 
+/**
+ * Class Card
+ * @package BriscolaCLI
+ */
 class Card
 {
     /**
@@ -13,12 +17,20 @@ class Card
      */
     private $rank;
 
+    /**
+     * Card constructor.
+     * @param string $suit
+     * @param string $rank
+     */
     public function __construct(string $suit, string $rank)
     {
         $this->suit = $suit;
         $this->rank = $rank;
     }
 
+    /**
+     * @return array
+     */
     public static function getSuits()
     {
         return [
@@ -29,6 +41,9 @@ class Card
         ];
     }
 
+    /**
+     * @return array
+     */
     public static function getRanks()
     {
         return [
@@ -45,7 +60,10 @@ class Card
         ];
     }
 
-    public function getPointsValue()
+    /**
+     * @return int
+     */
+    public function getPointsValue(): int
     {
         switch ($this->rank) {
             case 'A':
@@ -66,5 +84,10 @@ class Card
             default:
                 return 0;
         }
+    }
+
+    public function __toString()
+    {
+        return "{$this->rank}:{$this->suit}";
     }
 }

@@ -5,10 +5,13 @@ namespace BriscolaCLI;
 use function array_map;
 use function array_rand;
 use function array_reduce;
-use function array_values;
 use function end;
-use function sort;
+use function is_null;
 
+/**
+ * Class Game
+ * @package BriscolaCLI
+ */
 class Game
 {
     /**
@@ -28,6 +31,11 @@ class Game
      */
     private $nextPlayerToAct;
 
+    /**
+     * Game constructor.
+     * @param array $players
+     * @param Deck $deck
+     */
     public function __construct(array $players, Deck $deck)
     {
         $this->players = $players;
@@ -41,6 +49,9 @@ class Game
         $this->drawTrumpCard();
     }
 
+    /**
+     * @return mixed
+     */
     public function getWinner()
     {
         $scores = $this->getPlayerScores();
@@ -48,6 +59,9 @@ class Game
         return reset($scores)['player'];
     }
 
+    /**
+     * @return mixed
+     */
     public function getLoser()
     {
         $scores = $this->getPlayerScores();
@@ -55,16 +69,30 @@ class Game
         return end($scores)['player'];
     }
 
+    public function play(CommandLine $commandLine)
+    {
+        $play = $commandLine->getLine('$prompt');
+    }
+
+    /**
+     *
+     */
     private function pickRandomFirstPlayer()
     {
         $this->nextPlayerToAct = $this->players[array_rand($this->players)];
     }
 
+    /**
+     *
+     */
     private function drawTrumpCard()
     {
         $this->trumpCard = $this->deck->draw();
     }
 
+    /**
+     * @return mixed
+     */
     public function isRunning()
     {
         return array_reduce($this->players, function ($carry, $player) {
@@ -73,11 +101,17 @@ class Game
         }, true);
     }
 
+    /**
+     * @return Card
+     */
     public function getTrumpCard()
     {
         return $this->trumpCard;
     }
 
+    /**
+     *
+     */
     public function deal()
     {
         /** @var Player $player */
@@ -88,6 +122,9 @@ class Game
         }
     }
 
+    /**
+     * @return Player
+     */
     public function getNextPlayerToAct()
     {
         return $this->nextPlayerToAct;

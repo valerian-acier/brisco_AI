@@ -1,6 +1,7 @@
 <?php
 
 use BriscolaCLI\ArrayRandomizer;
+use BriscolaCLI\CommandLine;
 use BriscolaCLI\Deck;
 use BriscolaCLI\Game;
 use BriscolaCLI\Player;
@@ -14,7 +15,7 @@ $game = new Game([$player1, $player2], $deck);
 
 while ($game->isRunning()) {
     $game->deal();
-    $game->play();
+    $game->play(new CommandLine());
 }
 
 $winner = $game->getWinner();
