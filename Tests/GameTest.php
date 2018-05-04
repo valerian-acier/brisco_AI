@@ -76,21 +76,18 @@ class GameTest extends TestCase
     /** @test */
     public function play_one_turn()
     {
-        $player1 = new Player('Johnny');
-        $player2 = new Player('Mary');
-        $deck = new Deck(new ArrayRandomizer());
-        $game = new Game([$player1, $player2], $deck);
-        $game->start();
-        $commandLine = Mockery::mock(CommandLine::class);
-        $commandLine->shouldReceive('getLine')
-            ->once()
-            ->andReturn('1');
-        $commandLine->shouldReceive('getLine')
-            ->once()
-            ->andReturn('1');
-
-        $game->play($commandLine);
-
-        $this->assertInstanceOf(Player::class, $game->getNextPlayerToAct());
+        /**
+         * - while all players did not play
+         *     - get the next player to act
+         *     - tell him his cards with code (Acu (1), 2sw (2), 3cu (3)) and the briscola card
+         *     - he picks a code
+         *     - game->addCardPlayed($cardPicked)
+         *     - game->playerPlayed()
+         * - reset player played
+         * - choose winner of hand
+         * - winner->addCardsWon($cardsPlayed)
+         * - $cardsPlayed = []
+         * - game next player to act = winner
+         */
     }
 }
