@@ -1,6 +1,6 @@
 {
-    "name": "oliverklee/tdd-seed",
-    "description": "Starter repository for a project with PHPUnit",
+    "name": "nestecha/briscola-cli",
+    "description": "Briscola game in CLI",
     "type": "project",
     "keywords": [
         "template",
@@ -8,22 +8,9 @@
         "phpunit",
         "unit testing"
     ],
-    "homepage": "https://github.com/oliverklee/tdd-reader",
-    "license": "GPL-3.0-or-later",
-    "authors": [
-        {
-            "name": "Oliver Klee",
-            "email": "typo3-coding@oliverklee.de",
-            "homepage": "https://www.oliverklee.de/",
-            "role": "developer"
-        }
-    ],
-    "support": {
-        "source": "https://github.com/oliverklee/tdd-seed",
-        "issues": "https://github.com/oliverklee/tdd-seed/issues"
-    },
     "require": {
-        "php": "~7.0.0 || ~7.1.0 || ~7.2.0"
+        "php": "~7.0.0 || ~7.1.0 || ~7.2.0",
+        "mockery/mockery": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.3.0",
@@ -31,31 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "OliverKlee\\TddSeed\\": "Classes/"
+            "BriscolaCLI\\": "src/"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "OliverKlee\\TddSeed\\Tests\\": "Tests/"
-        }
-    },
-    "scripts": {
-        "ci:php:lint": "find Classes/ Tests/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l",
-        "ci:tests:unit": "phpunit Tests/Unit/",
-        "ci:tests:integration": "phpunit Tests/Integration/",
-        "ci:tests": [
-            "@ci:tests:unit",
-            "@ci:tests:integration"
-        ],
-        "ci:static": [
-            "@ci:php:lint"
-        ],
-        "ci:dynamic": [
-            "@ci:tests"
-        ],
-        "ci": [
-            "@ci:static",
-            "@ci:dynamic"
-        ]
     }
 }
