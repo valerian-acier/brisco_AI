@@ -86,6 +86,16 @@ class Card
         }
     }
 
+    public function getSuit()
+    {
+        return $this->suit;
+    }
+
+    public function getRank()
+    {
+        return $this->rank;
+    }
+
     public function __toString()
     {
         return "{$this->rank}:{$this->suit}";

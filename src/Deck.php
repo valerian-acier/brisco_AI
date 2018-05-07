@@ -45,8 +45,19 @@ class Deck
      */
     public function draw($cardsCount = 1)
     {
+        if ($this->getCardsLeftCount() == 0) {
+            return false;
+        }
+
+        $commandLine = new CommandLine();
+        $commandLine->sayLine("{$this->getCardsLeftCount()} cards left.");
+
+
         if ($cardsCount === 1) {
-            return array_shift($this->cards);
+            $card = array_shift($this->cards);
+            $commandLine->sayLine("Card drew : $card.");
+
+            return $card;
         }
 
         $cards = [];

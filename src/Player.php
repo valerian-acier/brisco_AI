@@ -3,6 +3,8 @@
 namespace BriscolaCLI;
 
 use function array_reduce;
+use function array_values;
+use function var_dump;
 
 /**
  * Class Player
@@ -61,7 +63,9 @@ class Player
      */
     public function addCardsWon(array $cardsWon)
     {
-        $this->cardsWon = $this->cardsWon + $cardsWon;
+        foreach ($cardsWon as $cardWon) {
+            $this->cardsWon[] = $cardWon['card'];
+        }
     }
 
     /**
@@ -80,5 +84,26 @@ class Player
     public function getName()
     {
         return $this->name;
+    }
+
+    public function removeCardFromHand($cardPicked)
+    {
+        unset($this->cardsInHand[$cardPicked]);
+        $this->cardsInHand = array_values($this->cardsInHand);
+    }
+
+    public function displayCards()
+    {
+        $string = "";
+
+        foreach ($this->getCardsInHand() as $index => $card) {
+            $string .= "($index)" . $card;
+
+            if ($index < count($this->getCardsInHand())) {
+                $string .= " ";
+            }
+        }
+
+        return $string;
     }
 }

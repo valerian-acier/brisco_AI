@@ -7,6 +7,7 @@ use function array_rand;
 use function array_reduce;
 use function end;
 use function is_null;
+use function var_dump;
 
 /**
  * Class Game
@@ -30,16 +31,34 @@ class Game
      * @var Player
      */
     private $nextPlayerToAct;
+    /**
+     * @var array
+     */
+    private $playersPlayed = [];
+    /**
+     * @var array
+     */
+    private $cardsPlayed = [];
+    /**
+     * @var CommandLine
+     */
+    private $commandLine;
+    /**
+     * @var bool
+     */
+    private $trumpCardDrawn = false;
 
     /**
      * Game constructor.
      * @param array $players
      * @param Deck $deck
+     * @param CommandLine $commandLine
      */
-    public function __construct(array $players, Deck $deck)
+    public function __construct(array $players, Deck $deck, CommandLine $commandLine)
     {
         $this->players = $players;
         $this->deck = $deck;
+        $this->commandLine = $commandLine;
     }
 
     public function start()
@@ -69,9 +88,30 @@ class Game
         return end($scores)['player'];
     }
 
-    public function play(CommandLine $commandLine)
+    public function play()
     {
-        $play = $commandLine->getLine('$prompt');
+        while ($this->onePlayerCanPlay()) {
+            $this->commandLine->sayLine("Current trump : {$this->trumpCard}");
+            $nextPlayer = $this->getNextPlayerToAct();
+            $cardPicked = $this->commandLine->getLine(
+                "{$nextPlayer->getName()} turn. Cards : {$nextPlayer->displayCards()}"
+            );
+
+            if ($cardPicked == "") {
+                $cardPicked = 0;
+            }
+
+            $this->addCardPlayed($nextPlayer, $cardPicked);
+            $this->playerPlayed($nextPlayer);
+        }
+
+        $this->resetPlayersPlayed();
+        $winner = $this->getCurrentHandWinner();
+        $winner->addCardsWon($this->getCardsPlayed());
+        $this->commandLine->sayLine(
+            "Hand finished. Winner is {$winner->getName()}"
+        );
+        $this->resetCardsPlayed();
     }
 
     /**
@@ -116,8 +156,19 @@ class Game
     {
         /** @var Player $player */
         foreach ($this->players as $player) {
-            while (count($player->getCardsInHand()) < 3 && $this->deck->getCardsLeftCount() > 0) {
-                $player->addCardInHand($this->deck->draw());
+            while (count($player->getCardsInHand()) < 3) {
+                $cardDrew = $this->deck->draw();
+
+                if (!$cardDrew && !$this->trumpCardDrawn) {
+                    $this->commandLine->sayLine("No more card to draw. Take the trump card : {$this->trumpCard}");
+                    $cardDrew = $this->trumpCard;
+                    $this->trumpCardDrawn = true;
+                }
+                else if (!$cardDrew && $this->trumpCardDrawn) {
+                    break;
+                }
+
+                $player->addCardInHand($cardDrew);
             }
         }
     }
@@ -145,5 +196,68 @@ class Game
         });
 
         return $scores;
+    }
+
+    private function onePlayerCanPlay()
+    {
+        return count($this->playersPlayed) < count($this->players);
+    }
+
+    private function addCardPlayed(Player $nextPlayer, $cardPicked)
+    {
+        $cardPlayed = $nextPlayer->getCardsInHand()[$cardPicked];
+        $this->cardsPlayed[] = ['player' => $nextPlayer, 'card' => $cardPlayed];
+        $nextPlayer->removeCardFromHand($cardPicked);
+
+        $this->commandLine->sayLine("Player {$nextPlayer->getName()} played card {$cardPlayed}.");
+    }
+
+    private function playerPlayed(Player $nextPlayer)
+    {
+        $this->playersPlayed[] = $nextPlayer;
+
+        if ($this->players[0]->getName() == $nextPlayer->getName()) {
+            $this->nextPlayerToAct = $this->players[1];
+        }
+
+        if ($this->players[1]->getName() == $nextPlayer->getName()) {
+            $this->nextPlayerToAct = $this->players[0];
+        }
+    }
+
+    private function getPlayersName()
+    {
+        return array_map(function ($player) {
+            return $player->getName();
+        }, $this->players);
+    }
+
+    private function resetPlayersPlayed()
+    {
+        $this->playersPlayed = [];
+    }
+
+    private function getCurrentHandWinner()
+    {
+        $cardsWinner = new CardsWinner();
+        $winningCard = $cardsWinner->getWinningCard(array_map(function ($cardPlayed) {
+            return $cardPlayed['card'];
+        }, $this->cardsPlayed), $this->getTrumpCard());
+
+        foreach ($this->cardsPlayed as $cardPlayed) {
+            if ($cardPlayed['card'] == $winningCard) {
+                return $cardPlayed['player'];
+            }
+        }
+    }
+
+    private function getCardsPlayed()
+    {
+        return $this->cardsPlayed;
+    }
+
+    private function resetCardsPlayed()
+    {
+        $this->cardsPlayed = [];
     }
 }

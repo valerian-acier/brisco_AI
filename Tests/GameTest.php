@@ -16,7 +16,7 @@ class GameTest extends TestCase
         $player1 = new Player('Johnny');
         $player2 = new Player('Mary');
         $deck = new Deck(new ArrayRandomizer());
-        $game = new Game([$player1, $player2], $deck);
+        $game = new Game([$player1, $player2], $deck, new FakeCommandLine());
         $game->start();
 
         $this->assertTrue($game->isRunning());
@@ -28,7 +28,7 @@ class GameTest extends TestCase
     {
         $player1 = new Player('Johnny');
         $deck = new Deck(new ArrayRandomizer());
-        $game = new Game([$player1], $deck);
+        $game = new Game([$player1], $deck, new FakeCommandLine());
 
         $this->assertEquals(0, count($player1->getCardsInHand()));
         $game->deal();
@@ -41,22 +41,10 @@ class GameTest extends TestCase
         $player1 = new Player('Johnny');
         $player2 = new Player('Mary');
         $deck = new Deck(new ArrayRandomizer());
-        $game = new Game([$player1, $player2], $deck);
+        $game = new Game([$player1, $player2], $deck, new FakeCommandLine());
         $game->start();
 
         $this->assertInstanceOf(Player::class, $game->getNextPlayerToAct());
-    }
-
-    /** @test */
-    public function when_there_is_no_card_left_in_deck_then_it_should_not_throw_an_error_and_not_draw_anything()
-    {
-        $player1 = new Player('Johnny');
-        $deck = new Deck(new ArrayRandomizer());
-        $game = new Game([$player1], $deck);
-        $this->assertEquals(0, count($player1->getCardsInHand()));
-        $deck->draw(40);
-        $game->deal();
-        $this->assertEquals(0, count($player1->getCardsInHand()));
     }
 
     /** @test */
@@ -65,7 +53,7 @@ class GameTest extends TestCase
         $player1 = new Player('Johnny');
         $player2 = new Player('Mary');
         $deck = new Deck(new ArrayRandomizer());
-        $game = new Game([$player1, $player2], $deck);
+        $game = new Game([$player1, $player2], $deck, new FakeCommandLine());
 
         $player1->addCardsWon([new Card(Card::getSuits()[0], 'A'), new Card(Card::getSuits()[0], '2')]);
 
@@ -89,5 +77,24 @@ class GameTest extends TestCase
          * - $cardsPlayed = []
          * - game next player to act = winner
          */
+
+        $player1 = new Player('Johnny');
+        $player2 = new Player('Mary');
+        $deck = new Deck(new ArrayRandomizer());
+        $game = new Game([$player1, $player2], $deck, new FakeCommandLine());
+        $game->start();
+
+        $game->play();
+
+        $this->assertCount(2, $player1->getCardsInHand());
+        $this->assertCount(2, $player2->getCardsInHand());
+    }
+}
+
+class FakeCommandLine extends CommandLine
+{
+    public function getLine($prompt)
+    {
+        return 1;
     }
 }
