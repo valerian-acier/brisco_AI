@@ -13,7 +13,6 @@ use BriscolaCLI\NeuralNetCardAgent;
 
 require 'vendor/autoload.php';
 
-
 /*$player1 = new MostValuableCardAgent('MostValuableAgent');
 $player2 = new RandomCardAgent('RandomAgent');
 $deck    = new Deck(new ArrayRandomizer());
@@ -21,11 +20,11 @@ $game    = new Game([$player1, $player2], $deck, new NoDisplayCommandLine());
 $scores  = $game->doXGame(100);
 print_r($scores);*/
 ini_set('memory_limit', '-1');
-geneticNeuralNetImprovement(20, 0.3, 100);
+geneticNeuralNetImprovement(200, 0.2, 100);
 
 function tournamentSelection($population)
 {
-    $selection = array_rand($population, count($population));
+    $selection = array_rand($population, 150);
     $r         = [];
     foreach ($selection as $id) {
         $r[] = ['fitness' => $population[$id]['fitness'], 'specimen' => $population[$id]['specimen'], 'id' => $id];
@@ -35,7 +34,7 @@ function tournamentSelection($population)
         return $b['fitness'] > $a['fitness'];
     });
 
-    foreach($r as $rr){
+    foreach ($r as $rr) {
         print($rr["fitness"] . "\n");
     }
 
@@ -54,17 +53,16 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
 {
     $populations     = [];
     $currentOpponent = new MostValuableCardAgent('MostValuableAgent');
-    $randomOpponent = new RandomCardAgent('RandomAgent');
+    $randomOpponent  = new RandomCardAgent('RandomAgent');
     for ($i = 0; $i < $specimensCount; $i++) {
         $specimen      = new NeuralNetCardAgent('NeuralNetAgent');
         $populations[] = ['specimen' => $specimen, 'fitness' => -1];
     }
 
     $decks = [];
-    for($i = 0 ; $i < $specimensCount ; $i++){
+    for ($i = 0; $i < $numberOfGameToEvaluate; $i++) {
         $decks[] = new Deck(new ArrayRandomizer());
     }
-
 
     $notAltered = [];
     for ($i = 0; $i < 10000; $i++) {
@@ -74,7 +72,6 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
         print("Generation " . $i . "\n");
         foreach ($populations as $index => $specimen) {
             $game   = new Game([$specimen['specimen'], $currentOpponent], $decks, new NoDisplayCommandLine(), new ArrayNotRandomizer());
-            //$game2 = new Game([$specimen['specimen'], $randomOpponent], $deck, new NoDisplayCommandLine());
             $scores = $game->doXGame($numberOfGameToEvaluate);
             //$scores2 = $game2->doXGame($numberOfGameToEvaluate*100);
             //$scores['NeuralNetAgent'] += $scores2['NeuralNetAgent'];
@@ -85,16 +82,24 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
 
                 //print_r($bestNeural);
                 print("Best is " . $best . "\n");
+                print("Versus random : \n");
+                $decks2 = [];
+                for ($i = 0; $i < $numberOfGameToEvaluate; $i++) {
+                    $decks2[] = new Deck(new ArrayRandomizer());
+                }
+                $game2   = new Game([$specimen['specimen'], $randomOpponent], $decks2, new NoDisplayCommandLine(), new ArrayRandomizer());
+                $scores2 = $game2->doXGame($numberOfGameToEvaluate);
+                print_r($scores2);
             }
             $notAltered[$index]++;
             $populations[$index]['fitness'] = $scores['NeuralNetAgent'];
-    }
+        }
 
-    foreach($notAltered as $x => $v){
-            if($v > 2){
-                print("Progression : " . $x. " -> " . $v . " -> " . $populations[$x]['fitness']) . "\n";
+        foreach ($notAltered as $x => $v) {
+            if ($v > 2) {
+                print("Progression : " . $x . " -> " . $v . " -> " . $populations[$x]['fitness']) . "\n";
             }
-    }
+        }
 
         list($winners, $losers) = tournamentSelection($populations);
         for ($j = 0; $j < count($losers); $j++) {
@@ -103,11 +108,9 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
             if ((((float)rand() / (float)getrandmax())) < $mutationRate) {
                 $child->mutate();
             }
-            $notAltered[$losers[$j]['id']] = 0;
+            $notAltered[$losers[$j]['id']]  = 0;
             $populations[$losers[$j]['id']] = ['specimen' => $child, 'fitness' => -1];
         }
-
-
     }
 }
 
