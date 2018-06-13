@@ -8,6 +8,7 @@ use function var_dump;
 
 /**
  * Class Player
+ *
  * @package BriscolaCLI
  */
 class Player
@@ -15,18 +16,19 @@ class Player
     /**
      * @var array
      */
-    private $cardsInHand = [];
+    protected $cardsInHand = [];
     /**
      * @var array
      */
-    private $cardsWon = [];
+    protected $cardsWon = [];
     /**
      * @var string
      */
-    private $name = '';
+    protected $name = '';
 
     /**
      * Player constructor.
+     *
      * @param string $name
      */
     public function __construct(string $name)
@@ -40,6 +42,29 @@ class Player
     public function addCardInHand(Card $card)
     {
         $this->cardsInHand[] = $card;
+    }
+
+    public function reset(){
+        $this->cardsInHand = [];
+        $this->cardsWon = [];
+    }
+
+    /**
+     * @param      $playedCards
+     * @param $currentWinningCard
+     * @param Card $currentTrumpCard
+     * @return int
+     */
+    public function getAction($playedCards, $currentWinningCard, Card $currentTrumpCard)
+    {
+        $cardPicked = (new CommandLine())->getLine(
+            "{$this->getName()} turn. Cards : {$this->displayCards()}"
+        );
+
+        if ($cardPicked == "") {
+            $cardPicked = 0;
+        }
+        return $cardPicked;
     }
 
     /**

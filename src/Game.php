@@ -11,6 +11,7 @@ use function var_dump;
 
 /**
  * Class Game
+ *
  * @package BriscolaCLI
  */
 class Game
@@ -22,7 +23,10 @@ class Game
     /**
      * @var Deck
      */
-    private $deck;
+    private $decks;
+
+    private $currentDeck;
+
     /**
      * @var Card
      */
@@ -48,24 +52,66 @@ class Game
      */
     private $trumpCardDrawn = false;
 
+    private $allCardsPlayed = [];
+
+    private $arrayRandomizer = null;
+
     /**
      * Game constructor.
-     * @param array $players
-     * @param Deck $deck
-     * @param CommandLine $commandLine
+     *
+     * @param array           $players
+     * @param array            $deck
+     * @param CommandLine     $commandLine
+     * @param ArrayRandomizer $arrayRandomizer
      */
-    public function __construct(array $players, Deck $deck, CommandLine $commandLine)
+    public function __construct(array $players, array $decks, CommandLine $commandLine, ArrayRandomizer $arrayRandomizer)
     {
-        $this->players = $players;
-        $this->deck = $deck;
+        $this->players     = $players;
+        $this->decks        = $decks;
         $this->commandLine = $commandLine;
+        $this->arrayRandomizer = $arrayRandomizer;
+        $this->currentDeck = 0;
+
     }
 
     public function start()
     {
+        $this->currentDeck = ($this->currentDeck+1) % count($this->decks);
+        $this->decks[$this->currentDeck]->reset();
+        foreach ($this->players as $player) {
+            /** @var Player $player */
+            $player->reset();
+        }
+        $this->cardsPlayed   = [];
+        $this->playersPlayed = [];
+        $this->trumpCardDrawn = false;
+        $this->trumpCard = null;
+        $this->allCardsPlayed = [];
+
         $this->pickRandomFirstPlayer();
         $this->deal();
         $this->drawTrumpCard();
+    }
+
+    public function doXGame($x)
+    {
+        $this->currentDeck = 0;
+        $winLose = [$this->players[0]->getName() => 0, $this->players[1]->getName() => 0];
+        for ($i = 0; $i < $x; $i++) {
+            $this->start();
+            while ($this->isRunning()) {
+                $this->deal();
+                $this->play();
+            }
+            $winner = $this->getWinner();
+            $loser = $this->getLoser();
+            /** @var Player $winner */
+            $winLose[$winner->getName()] += 1;
+            //$winLose[$loser->getName()] += $loser->getScore();
+        }
+
+        return $winLose;
+
     }
 
     /**
@@ -93,14 +139,15 @@ class Game
         while ($this->onePlayerCanPlay()) {
             $this->commandLine->sayLine("Current trump : {$this->trumpCard}");
             $nextPlayer = $this->getNextPlayerToAct();
-            $cardPicked = $this->commandLine->getLine(
-                "{$nextPlayer->getName()} turn. Cards : {$nextPlayer->displayCards()}"
-            );
 
-            if ($cardPicked == "") {
-                $cardPicked = 0;
+
+            $cards = $this->getCardsPlayed();
+            $firstCard = null;
+            if(count($cards) > 0){
+                $firstCard = $cards[0]['card'];
             }
 
+            $cardPicked = $nextPlayer->getAction($this->allCardsPlayed, $firstCard, $this->getTrumpCard());
             $this->addCardPlayed($nextPlayer, $cardPicked);
             $this->playerPlayed($nextPlayer);
         }
@@ -119,7 +166,7 @@ class Game
      */
     private function pickRandomFirstPlayer()
     {
-        $this->nextPlayerToAct = $this->players[array_rand($this->players)];
+        $this->nextPlayerToAct = $this->players[$this->arrayRandomizer->pickRandom()];
     }
 
     /**
@@ -127,7 +174,7 @@ class Game
      */
     private function drawTrumpCard()
     {
-        $this->trumpCard = $this->deck->draw();
+        $this->trumpCard = $this->decks[$this->currentDeck]->draw();
     }
 
     /**
@@ -157,14 +204,13 @@ class Game
         /** @var Player $player */
         foreach ($this->players as $player) {
             while (count($player->getCardsInHand()) < 3) {
-                $cardDrew = $this->deck->draw();
+                $cardDrew = $this->decks[$this->currentDeck]->draw();
 
                 if (!$cardDrew && !$this->trumpCardDrawn) {
                     $this->commandLine->sayLine("No more card to draw. Take the trump card : {$this->trumpCard}");
-                    $cardDrew = $this->trumpCard;
+                    $cardDrew             = $this->trumpCard;
                     $this->trumpCardDrawn = true;
-                }
-                else if (!$cardDrew && $this->trumpCardDrawn) {
+                } else if (!$cardDrew && $this->trumpCardDrawn) {
                     break;
                 }
 
@@ -205,7 +251,8 @@ class Game
 
     private function addCardPlayed(Player $nextPlayer, $cardPicked)
     {
-        $cardPlayed = $nextPlayer->getCardsInHand()[$cardPicked];
+        $cardPlayed          = $nextPlayer->getCardsInHand()[$cardPicked];
+        $this->allCardsPlayed[] = $cardPlayed;
         $this->cardsPlayed[] = ['player' => $nextPlayer, 'card' => $cardPlayed];
         $nextPlayer->removeCardFromHand($cardPicked);
 

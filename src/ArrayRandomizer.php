@@ -10,7 +10,10 @@ class ArrayRandomizer
     {
         $shuffled = $array;
         shuffle($shuffled);
-
         return $shuffled;
+    }
+
+    public function pickRandom(){
+        return rand(0,1);
     }
 }
