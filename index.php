@@ -92,7 +92,7 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
                 print("Best is " . $best . "\n");
                 print("Versus random : \n");
                 $decks2 = [];
-                for ($i = 0; $i < $numberOfGameToEvaluate; $i++) {
+                for ($a = 0; $a < $numberOfGameToEvaluate; $a++) {
                     $decks2[] = new Deck(new ArrayRandomizer());
                 }
                 $game2   = new Game([$specimen['specimen'], $randomOpponent], $decks2, new NoDisplayCommandLine(), new ArrayRandomizer());
