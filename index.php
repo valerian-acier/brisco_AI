@@ -51,16 +51,20 @@ function croissement(NeuralNetCardAgent $pere, NeuralNetCardAgent $mere)
 
 function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGameToEvaluate)
 {
+    $notAltered = [];
     $populations     = [];
     $currentOpponent = new MostValuableCardAgent('MostValuableAgent');
     $randomOpponent  = new RandomCardAgent('RandomAgent');
     for ($i = 0; $i < $specimensCount; $i++) {
         $specimen      = new NeuralNetCardAgent('NeuralNetAgent');
         $populations[] = ['specimen' => $specimen, 'fitness' => -1];
+        $notAltered[$i] = 0;
     }
 
 
-    $notAltered = [];
+
+
+
     for ($i = 0; $i < 10000; $i++) {
         if($i % 10 == 0){
             $decks = [];
