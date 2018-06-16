@@ -60,9 +60,10 @@ class Game
      * Game constructor.
      *
      * @param array           $players
-     * @param array            $deck
+     * @param array           $decks
      * @param CommandLine     $commandLine
      * @param ArrayRandomizer $arrayRandomizer
+     * @internal param array $deck
      */
     public function __construct(array $players, array $decks, CommandLine $commandLine, ArrayRandomizer $arrayRandomizer)
     {

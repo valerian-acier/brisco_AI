@@ -20,11 +20,11 @@ $game    = new Game([$player1, $player2], $deck, new NoDisplayCommandLine());
 $scores  = $game->doXGame(100);
 print_r($scores);*/
 ini_set('memory_limit', '-1');
-geneticNeuralNetImprovement(200, 0.2, 100);
+geneticNeuralNetImprovement(100, 0.05, 10);
 
 function tournamentSelection($population)
 {
-    $selection = array_rand($population, 150);
+    $selection = array_rand($population, count($population));
     $r         = [];
     foreach ($selection as $id) {
         $r[] = ['fitness' => $population[$id]['fitness'], 'specimen' => $population[$id]['specimen'], 'id' => $id];
@@ -59,13 +59,18 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
         $populations[] = ['specimen' => $specimen, 'fitness' => -1];
     }
 
-    $decks = [];
-    for ($i = 0; $i < $numberOfGameToEvaluate; $i++) {
-        $decks[] = new Deck(new ArrayRandomizer());
-    }
 
     $notAltered = [];
     for ($i = 0; $i < 10000; $i++) {
+        if($i % 10 == 0){
+            $decks = [];
+            for ($i = 0; $i < $numberOfGameToEvaluate; $i++) {
+                $decks[] = new Deck(new ArrayRandomizer());
+            }
+        }
+
+
+
         $best       = -1;
         $bestNeural = null;
 

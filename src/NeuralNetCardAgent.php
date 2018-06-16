@@ -21,7 +21,7 @@ class NeuralNetCardAgent extends Player
     private $inData = 40;
     private $outData = 3;
     private $neurones = 10;
-    private $layersNB = 1;
+    private $layersNB = 2;
 
     public function __construct($name)
     {
