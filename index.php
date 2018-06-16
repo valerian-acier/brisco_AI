@@ -68,12 +68,11 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
     for ($i = 0; $i < 10000; $i++) {
         if($i % 10 == 0){
             $decks = [];
-            for ($i = 0; $i < $numberOfGameToEvaluate; $i++) {
+            print("Reset decks !\n");
+            for ($j = 0; $j < $numberOfGameToEvaluate; $j++) {
                 $decks[] = new Deck(new ArrayRandomizer());
             }
         }
-
-
 
         $best       = -1;
         $bestNeural = null;
