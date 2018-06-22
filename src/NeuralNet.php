@@ -108,7 +108,7 @@ class NeuralNet
                 if ($i == 0) {
                     $layerSize = $this->inData + 1;
                 }
-                $layer[] = $this->generateRandomArrayBetweenValues($layerSize, -1, 1);
+                $layer[] = $this->generateRandomArrayBetweenValues($layerSize, -0.01, 0.01);
             }
             $this->weights[] = $layer;
         }
@@ -117,7 +117,7 @@ class NeuralNet
 
         $layer = [];
         for ($j = 0; $j < $this->outData; $j++) {
-            $layer[] = $this->generateRandomArrayBetweenValues($this->neurones + 1, -1, 1);
+            $layer[] = $this->generateRandomArrayBetweenValues($this->neurones + 1, -0.01, 0.01);
         }
         $this->weights[] = $layer;
     }

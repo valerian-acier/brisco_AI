@@ -57,7 +57,7 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
 {
     $notAltered = [];
     $populations     = [];
-    $currentOpponent = new MostValuableCardAgent('MostValuableAgent');
+    $currentOpponent = new RandomCardAgent('MostValuableAgent');
     $randomOpponent  = new RandomCardAgent('RandomAgent');
     for ($i = 0; $i < $specimensCount; $i++) {
         $specimen      = new NeuralNetCardAgent('NeuralNetAgent');
@@ -66,13 +66,13 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
     }
 
     for ($i = 0; $i < 10000; $i++) {
-        if($i % 100 == 0){
+        //if($i % 100 == 0){
             $decks = [];
             print("Reset decks !\n");
             for ($j = 0; $j < $numberOfGameToEvaluate; $j++) {
                 $decks[] = new Deck(new ArrayRandomizer());
             }
-        }
+       // }
 
         $best       = -1;
         $bestNeural = null;
