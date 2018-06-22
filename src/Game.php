@@ -97,9 +97,12 @@ class Game
     public function doXGame($x)
     {
         $this->currentDeck = 0;
+        $lastWinner = null;
         $winLose = [$this->players[0]->getName() => 0, $this->players[1]->getName() => 0];
         for ($i = 0; $i < $x; $i++) {
             $this->start();
+            if($lastWinner != null)
+                $this->nextPlayerToAct = $lastWinner;
             while ($this->isRunning()) {
                 $this->deal();
                 $this->play();
@@ -108,6 +111,7 @@ class Game
             $loser = $this->getLoser();
             /** @var Player $winner */
             $winLose[$winner->getName()] += 1;
+            $lastWinner = $winner;
             //$winLose[$loser->getName()] += $loser->getScore();
         }
 

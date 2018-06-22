@@ -41,6 +41,32 @@ class NeuralNet
                 }
             }
         }
+        /*if(rand()%1){
+            $p1 = $mere;
+            $p2 = $pere;
+        }
+        else{
+            $p1 = $pere;
+            $p2 = $mere;
+        }
+
+
+
+        for ($layoutIndex = 0; $layoutIndex < count($this->weights); $layoutIndex++) {
+
+            $motherPoint =  rand() % (count($this->weights[$layoutIndex]) * count($this->weights[$layoutIndex][0]));
+            //echo "Motherp : " . $motherPoint . "\r\n";
+            for ($neuroneIndex = 0; $neuroneIndex < count($this->weights[$layoutIndex]); $neuroneIndex++) {
+                for ($connexionIndex = 0; $connexionIndex < count($this->weights[$layoutIndex][$neuroneIndex]); $connexionIndex++) {
+                    if ($neuroneIndex * count($this->weights[$layoutIndex][0]) + $connexionIndex < $motherPoint ) {
+                        $this->weights[$layoutIndex][$neuroneIndex][$connexionIndex] = $p1->weights[$layoutIndex][$neuroneIndex][$connexionIndex];
+                    } else {
+                        $this->weights[$layoutIndex][$neuroneIndex][$connexionIndex] = $p2->weights[$layoutIndex][$neuroneIndex][$connexionIndex];
+                    }
+                }
+            }
+        }*/
+
     }
 
     public

@@ -20,7 +20,7 @@ $game    = new Game([$player1, $player2], $deck, new NoDisplayCommandLine());
 $scores  = $game->doXGame(100);
 print_r($scores);*/
 ini_set('memory_limit', '-1');
-geneticNeuralNetImprovement(100, 0.05, 10);
+geneticNeuralNetImprovement(100, 0.1, 10);
 
 function tournamentSelection($population)
 {
@@ -34,9 +34,13 @@ function tournamentSelection($population)
         return $b['fitness'] > $a['fitness'];
     });
 
+    $moyenne = 0;
     foreach ($r as $rr) {
         print($rr["fitness"] . "\n");
+        $moyenne += $rr["fitness"];
     }
+
+    echo "Moyenne : " . $moyenne/count($r) . "\r\n";
 
     return [array_slice($r, 0, 10), array_slice($r, 10)];
 }
@@ -61,12 +65,8 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
         $notAltered[$i] = 0;
     }
 
-
-
-
-
     for ($i = 0; $i < 10000; $i++) {
-        if($i % 10 == 0){
+        if($i % 100 == 0){
             $decks = [];
             print("Reset decks !\n");
             for ($j = 0; $j < $numberOfGameToEvaluate; $j++) {
@@ -92,11 +92,11 @@ function geneticNeuralNetImprovement($specimensCount, $mutationRate, $numberOfGa
                 print("Best is " . $best . "\n");
                 print("Versus random : \n");
                 $decks2 = [];
-                for ($a = 0; $a < $numberOfGameToEvaluate; $a++) {
+                for ($a = 0; $a < 100; $a++) {
                     $decks2[] = new Deck(new ArrayRandomizer());
                 }
-                $game2   = new Game([$specimen['specimen'], $randomOpponent], $decks2, new NoDisplayCommandLine(), new ArrayRandomizer());
-                $scores2 = $game2->doXGame($numberOfGameToEvaluate);
+                $game2   = new Game([$specimen['specimen'], $randomOpponent], $decks2, new NoDisplayCommandLine(), new ArrayNotRandomizer());
+                $scores2 = $game2->doXGame(100);
                 print_r($scores2);
             }
             $notAltered[$index]++;
